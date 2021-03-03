@@ -28,42 +28,24 @@ const calc = document.querySelector(".calc");
 const calculation = calc.querySelector(".calculation");
 const answer = calc.querySelector(".answer");
 
-let pressed=false;
 const lengthModerator = () => {
     const power = 17;
-    const content = calculation.textContent;
     if (calculation.textContent.length > power) {
         calculation.textContent = '';
     }
 }
 
-function removePointerEvents(){
-    const arithmetics = document.querySelectorAll('.arith');
-        arithmetics.forEach(element => {
-            element.style.pointerEvents = 'none';
-        });
-        pressed=true;
-}
-
-function addPointerEvents() {
-    const arithmetics = document.querySelectorAll('.arith');
-    arithmetics.forEach(element => {
-        element.style.pointerEvents = 'all';
-    });
-    pressed=false;
-}
 calc.addEventListener('click', (e) => {
     //number input
     if (e.target.classList.contains('num')) {
         calculation.textContent += parseFloat(e.target.textContent);
         lengthModerator();
-        addPointerEvents();
     }
     //operator input
     if (e.target.classList.contains('arith')) {
-        calculation.textContent += e.target.textContent;
+        // if(content.substr(content.length-2,content.length-1))                               // add regex for validation
+            calculation.textContent += e.target.textContent;
         // console.log(e.target);
-        removePointerEvents();
     }
     //clear screen
     if (e.target.classList.contains('clear')) {
@@ -75,7 +57,6 @@ calc.addEventListener('click', (e) => {
             calculation.textContent = '';
             deleter.classList.remove('cleaner');
         }, 600);
-        addPointerEvents();
     }
     //backspace
     if(e.target.classList.contains('delete')){
@@ -85,12 +66,12 @@ calc.addEventListener('click', (e) => {
     if (e.target.classList.contains('eql')) {
         try {
             answer.textContent = parseFloat(eval(calculation.textContent)).toFixed(2);
+            calculation.textContent=answer.textContent;
         }
         catch (e) {
             answer.textContent = 'ERROR';
+            calculation.textContent = ' ';
         }
-        calculation.textContent = ' ';
-        addPointerEvents();
     }
 
 })
@@ -99,24 +80,30 @@ calc.addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => {
     if (e.key.match(/[0-9]/)){
         calculation.textContent += parseInt(e.key);
-        addPointerEvents();
     }
     if (e.key === 'Enter') {
         if (calculation.textContent.length > 0) {
             try {
                 answer.textContent = parseFloat(eval(calculation.textContent)).toFixed(2);
+                calculation.textContent=answer.textContent;
             }
             catch (e) {
                 answer.textContent = 'ERROR';
+                calculation.textContent = ' ';
             }
-            calculation.textContent = ' ';
         }
-        addPointerEvents();
     }
 
-    if((!pressed) && (e.key==='+'||e.key==='-'||e.key==='/'||e.key==='*'||e.key==='.') ){
-        calculation.textContent += e.key;
-        removePointerEvents();
+   
+    if(e.key=='Delete'){
+        const deleter = calc.querySelector('.deleter');
+        // console.log(deleter);
+        deleter.classList.add('cleaner');
+        setTimeout(() => {
+            answer.textContent = '';
+            calculation.textContent = '';
+            deleter.classList.remove('cleaner');
+        }, 600);
     }
     if(e.key==='Backspace')
     calculation.textContent= calculation.textContent.substring(0,calculation.textContent.length-1);
